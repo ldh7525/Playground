@@ -1,16 +1,11 @@
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private PlayerMove playerMove;
+    [SerializeField] private PlayerLevel playerLevel;
+    [SerializeField] private PlayerItem playeritem;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+
 }
