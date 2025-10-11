@@ -1,16 +1,44 @@
 using UnityEngine;
+using UnityEngine.Pool;
 
-public class GemManager : MonoBehaviour
+public enum GemType { Blue, Green, Red }
+public class GemManager : Singleton<GemManager>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Sprite[] gemSprites;
+    [SerializeField] private GameObject gemPrefab;
+
+    public ObjectPool<GameObject> gemPool;
+
+    protected override void Awake()
     {
-        
+        base.Awake();
+        gemPool = new ObjectPool<GameObject>
+        (
+            () => Instantiate(gemPrefab),
+            null,
+            null,
+            defaultCapacity: 5,
+            maxSize: 20
+        );
     }
 
-    // Update is called once per frame
-    void Update()
+    public GameObject Get(GemType type)
     {
-        
+        Gem gem = gemPool.Get().GetComponent<Gem>();
+        var sprite = type switch
+        {
+            GemType.Blue => gemSprites[0],
+            GemType.Green => gemSprites[1],
+            GemType.Red => gemSprites[2],
+            _ => throw new System.ArgumentOutOfRangeException(nameof(type), $"지원하지 않는 GemType: {type}")
+        };
+        gem.OnGet(sprite);
+
+        return gem.gameObject;
+    }
+
+    public void Release()
+    {
+
     }
 }

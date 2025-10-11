@@ -1,6 +1,5 @@
 using UnityEngine;
-
-public class GameStateManager : Singleton<GameStateManager>
+public class MSGameStateManager : Singleton<MSGameStateManager>
 {
     public GameState CurrentState { get; private set; }
 

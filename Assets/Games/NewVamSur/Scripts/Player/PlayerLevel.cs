@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -5,15 +6,31 @@ using UnityEngine;
 /// </summary>
 public class PlayerLevel : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public int level { get; private set; }
+    public int exp { get; private set; }
+
+    [SerializeField]
+    private int[] expToNextLevel;
+    public Action OnLevelup;
+
+
+    private void Init()
     {
-        
+        level = 1;
+        exp = 0;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void AddExperience(int amount)
     {
-        
+        exp += amount;
+        if (exp > expToNextLevel[level - 1])
+            LevelUp();
+    }
+
+    private void LevelUp()
+    {
+        level += 1;
+        exp = 0;
+        OnLevelup?.Invoke();    
     }
 }

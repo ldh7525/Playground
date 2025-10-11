@@ -14,9 +14,10 @@ public class PlayerMove : MonoBehaviour
         playerInput.onActionTriggered += OnActionTriggered;
     }
 
-    private void FixedUpdate()
+    private void OnActionTriggered(InputAction.CallbackContext context)
     {
-        Move();
+        if (context.action.name == "Move")
+            moveVector = context.ReadValue<Vector2>();
     }
 
     public void Move()
@@ -24,9 +25,4 @@ public class PlayerMove : MonoBehaviour
         rigidbody2D.linearVelocity = moveVector * moveSpeed;
     }
 
-    private void OnActionTriggered(InputAction.CallbackContext context)
-    {
-        if (context.action.name == "Move")
-            moveVector = context.ReadValue<Vector2>();
-    }
 }

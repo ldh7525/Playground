@@ -35,7 +35,7 @@ public class DragController : MonoBehaviour
     private void DraggingOnAnotherNode()
     {
         Edge a = new Edge(currentNode, node);
-        EdgeManager.instance.edgeMap.TryGetValue(a, out EdgeVisual edgeVisual);
+        EdgeManager.Instance.edgeMap.TryGetValue(a, out EdgeVisual edgeVisual);
 
         if (edgeVisual == null) return; //간선이 없으면 그냥 리턴
         if(visitedEdgeList.Contains(edgeVisual)) return; //이미 방문한 간선이면 리턴

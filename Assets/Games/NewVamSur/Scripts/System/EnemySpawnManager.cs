@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -11,11 +12,13 @@ using UnityEngine.UIElements;
 
 public class EnemySpawnManager : Singleton<EnemySpawnManager>
 {
+    [Serializable]
     public class Wave
     {
+        [Serializable]
         public struct SpawnInfo
         {
-            public EnemyType enemy;
+            public EnemyType enemyType;
             public int spawnCount;
         }
 
@@ -25,7 +28,7 @@ public class EnemySpawnManager : Singleton<EnemySpawnManager>
 
     [SerializeField] private EnemyMapSO enemyMap;
     [SerializeField] private Wave[] waves;
-    [SerializeField] private EnemyPool enemyPool;
+    public EnemyPool enemyPool;
 
     [SerializeField] private float waveInterval;
     [SerializeField] private float maxSpawnRange;
@@ -34,9 +37,15 @@ public class EnemySpawnManager : Singleton<EnemySpawnManager>
     public Transform enemyParent;
     private Player player;
 
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     private void Start()
     {
-        player = Player.instance;
+        enemyParent = new GameObject("EnemyParent").transform;
+        player = Player.Instance;
         StartCoroutine(StartWaves());
     }
 
@@ -50,15 +59,16 @@ public class EnemySpawnManager : Singleton<EnemySpawnManager>
         }
     }
 
-    private IEnumerator ExecuteWave(Wave.SpawnInfo[] spawnInfo, float duration)
+    private IEnumerator ExecuteWave(Wave.SpawnInfo[] spawnInfoList, float duration)
     {
-        int spawnInfoLength = spawnInfo.Length;
+        int spawnInfoLength = spawnInfoList.Length;
 
         float[] spawnInterval = new float[spawnInfoLength];
         for (int i = 0; i < spawnInfoLength; i++)
-            spawnInterval[i] = duration / spawnInfo[i].spawnCount;
-        float[] spawnTimer = spawnInterval;
+            spawnInterval[i] = duration / spawnInfoList[i].spawnCount;
+        GameObject[] prefabList = spawnInfoList.Select(info => enemyMap.MatchPrefab(info.enemyType)).ToArray();
 
+        float[] spawnTimer = spawnInterval.ToArray();
         while (duration > 0)
         {
             for (int i = 0; i < spawnInfoLength; i++)
@@ -66,23 +76,27 @@ public class EnemySpawnManager : Singleton<EnemySpawnManager>
                 spawnTimer[i] -= Time.deltaTime;
                 if (spawnTimer[i] <= 0)
                 {
-                    SpawnEnemy(spawnInfo[i].enemy);
+                    SpawnEnemy(prefabList[i]);
                     spawnTimer[i] = spawnInterval[i];
                 }
             }
-
             duration -= Time.deltaTime;
             yield return null;
         }
     }
 
-    private void SpawnEnemy(EnemyType enemyType)
+    private void SpawnEnemy(GameObject prefab)
     {
-        GameObject prefab = enemyMap.enemyPrefabs.Where(e => e.enemy == enemyType).ToArray()[0].enemyPrefab;
-        float theta = Random.Range(0, Mathf.PI * 2);
+        float theta = UnityEngine.Random.Range(0, Mathf.PI * 2);
         Vector2 vec = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta));
         var enemy = enemyPool.GetPool(prefab).Get();
 
-        enemy.transform.position = player.transform.position + (vec * Random.Range(minSpawnRange, maxSpawnRange)).UnsqueezeZ();
+        enemy.transform.position = player.transform.position + (vec * UnityEngine.Random.Range(minSpawnRange, maxSpawnRange)).UnsqueezeZ();
+    }
+
+    public void ReleaseEnemy(Enemy enemy)
+    {
+        GameObject prefab = enemyMap.enemyPrefabs.Where(e => e.enemy == enemy.type).ToList()[0].enemyPrefab;
+        enemyPool.GetPool(prefab).Release(enemy.gameObject);
     }
 }

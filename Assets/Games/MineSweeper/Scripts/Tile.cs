@@ -28,10 +28,10 @@ public class Tile : MonoBehaviour
         topTileSpriteRenderer.enabled = false;
 
         if (hasBomb)
-            GameStateManager.instance.GameOver();//게임오버
+            MSGameStateManager.Instance.GameOver();//게임오버
 
         if (isEmpty && triggerBFS)
-            TileManager.instance.EmptyRevealBFS(this);
+            TileManager.Instance.EmptyRevealBFS(this);
 
     }
 

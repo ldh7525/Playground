@@ -2,15 +2,25 @@ using UnityEngine;
 
 public class Gem : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private CircleCollider2D circleCollider;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
+    public void OnGet(Sprite sprite)
     {
-        
+        gameObject.SetActive(true);
+        transform.SetParent(GemManager.Instance.transform);
+
+        spriteRenderer.sprite = sprite;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnRelease()
     {
-        
+        gameObject.SetActive(false);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // TODO: ¤¾¤¾
+        Player.Instance.playerLevel.AddExperience(1);
     }
 }

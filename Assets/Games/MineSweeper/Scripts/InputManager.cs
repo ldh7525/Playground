@@ -31,9 +31,9 @@ public class InputManager : MonoBehaviour
             Tile tile = hit.collider.GetComponentInParent<Tile>();
             if (tile != null)
             {
-                if (TileManager.instance.isFirstClick)
+                if (TileManager.Instance.isFirstClick)
                 {
-                    TileManager.instance.PlantBombAndNumbers(worldPos);
+                    TileManager.Instance.PlantBombAndNumbers(worldPos);
                     print("plant");
                 }
                 tile.RevealTile();
